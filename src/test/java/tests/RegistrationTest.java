@@ -1,5 +1,6 @@
 package tests;
 
+import client.User;
 import client.UserClient;
 import io.qameta.allure.Description;
 import io.qameta.allure.junit4.DisplayName;
@@ -12,6 +13,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import page_object.LoginPage;
 import page_object.MainPage;
 import page_object.RegisterPage;
+import util.WebDriverUtil;
 
 import java.util.concurrent.TimeUnit;
 
@@ -35,24 +37,10 @@ public class RegistrationTest {
 
     @Before
     public void startUp() {
-        if (driverType.equals("chromedriver")) {
-            System.setProperty("webdriver.chrome.driver", "C:\\Program Files\\WebDriver\\bin\\chromedriver.exe");
-            ChromeOptions options = new ChromeOptions();
-            driver = new ChromeDriver(options);
-            // Установка неявного ожидания
-            driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-            // Переход на тестируемый сайт
-            driver.navigate().to("https://stellarburgers.nomoreparties.site/");
-        } else if (driverType.equals("yandexdriver")) {
-            System.setProperty("webdriver.chrome.driver", "C:\\Program Files\\WebDriver\\bin\\yandexdriver.exe");
-            ChromeOptions options = new ChromeOptions();
-            options.setBinary("C:\\Users\\ZavHost\\AppData\\Local\\Yandex\\YandexBrowser\\Application\\browser.exe");
-            driver = new ChromeDriver(options);
-            // Установка неявного ожидания
-            driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-            // Переход на тестируемый сайт
-            driver.navigate().to("https://stellarburgers.nomoreparties.site/");
-        }
+        driver = WebDriverUtil.initializeDriver(driverType);
+        WebDriverUtil.navigateToUrl(driver, "https://stellarburgers.nomoreparties.site/");
+
+        //accessToken = UserClient.postCreateNewUser(new User(NAME, EMAIL, PASSWORD));
     }
 
     @Parameterized.Parameters(name = "Результаты проверок браузера: {0}")

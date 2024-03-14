@@ -11,6 +11,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import page_object.MainPage;
+import util.WebDriverUtil;
 
 import java.util.concurrent.TimeUnit;
 
@@ -26,24 +27,8 @@ public class TransitionsSectionsConstructorTest {
 
     @Before
     public void startUp() {
-        if (driverType.equals("chromedriver")) {
-            System.setProperty("webdriver.chrome.driver", "C:\\Program Files\\WebDriver\\bin\\chromedriver.exe");
-            ChromeOptions options = new ChromeOptions();
-            driver = new ChromeDriver(options);
-            // Установка неявного ожидания
-            driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-            // Переход на тестируемый сайт
-            driver.navigate().to("https://stellarburgers.nomoreparties.site/");
-        } else if (driverType.equals("yandexdriver")) {
-            System.setProperty("webdriver.chrome.driver", "C:\\Program Files\\WebDriver\\bin\\yandexdriver.exe");
-            ChromeOptions options = new ChromeOptions();
-            options.setBinary("C:\\Users\\ZavHost\\AppData\\Local\\Yandex\\YandexBrowser\\Application\\browser.exe");
-            driver = new ChromeDriver(options);
-            // Установка неявного ожидания
-            driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-            // Переход на тестируемый сайт
-            driver.navigate().to("https://stellarburgers.nomoreparties.site/");
-        }
+        driver = WebDriverUtil.initializeDriver(driverType);
+        WebDriverUtil.navigateToUrl(driver, "https://stellarburgers.nomoreparties.site/");
     }
 
     @Parameterized.Parameters(name = "Результаты проверок браузера: {0}")

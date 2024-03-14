@@ -1,6 +1,7 @@
 package client;
 
 import io.qameta.allure.Step;
+import io.restassured.internal.RestAssuredResponseOptionsGroovyImpl;
 import io.restassured.response.Response;
 import static io.restassured.RestAssured.given;
 import org.hamcrest.Matchers;
@@ -11,15 +12,22 @@ public class UserClient {
 
 
     @Step("Успешное создание уникального пользователя.")
-    public static Response postCreateNewUser(User user) {
-        return given().log().all()
+    public static String postCreateNewUser(User user) {
+        Response response = given()
+                .log().all()
                 .header("Content-type", "application/json")
                 .body(user)
                 .when()
                 .post("/api/auth/register");
+
+        if (response.getStatusCode() == 200) {
+            String accessToken = response.jsonPath().getString("accessToken");
+            return accessToken;
+        } else {
+            System.out.println("Ошибка: Регистрация не удалась");
+            return null;
+        }
     }
-
-
 
     @Step("Неуспешный ответ сервера на регистрацию пользователя.")
     public void checkFailedResponseAuthRegister(Response response) {
