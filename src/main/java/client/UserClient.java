@@ -11,13 +11,14 @@ import java.util.Locale;
 public class UserClient {
 
 
+    @Step("Успешное создание уникального пользователя.")
     public static String postCreateNewUser(User user) {
         Response response = given()
                 .log().all()
                 .header("Content-type", "application/json")
                 .body(user)
                 .when()
-                .post("http://localhost:8080/api/auth/register/");
+                .post("/api/auth/register");
 
         if (response.getStatusCode() == 200) {
             String accessToken = response.jsonPath().getString("accessToken");
@@ -95,9 +96,9 @@ public class UserClient {
     }
 
     @Step("Удаление пользователя")
-    public static Response deleteUser(String token){
+    public static Response deleteUser(String accessToken){
         return given()
-                .header("Authorization", token)
+                .header("Authorization",accessToken)
                 .when()
                 .delete("/api/auth/user");
     }
