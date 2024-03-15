@@ -26,9 +26,9 @@ public class RegistrationTest {
     private String driverType;
     public static String accessToken;
 
-    String NAME = randomAlphanumeric(4, 8);
-    String EMAIL = randomAlphanumeric(6, 10) + "@yandex.ru";
-    String PASSWORD = randomAlphanumeric(10, 20);
+    String NAME;
+    String EMAIL;
+    String PASSWORD;
     String PASSWORD_FAILED = randomAlphanumeric(0, 5);
 
     public RegistrationTest(String driverType) {
@@ -40,7 +40,11 @@ public class RegistrationTest {
         driver = WebDriverUtil.initializeDriver(driverType);
         WebDriverUtil.navigateToUrl(driver, "https://stellarburgers.nomoreparties.site/");
 
-        //accessToken = UserClient.postCreateNewUser(new User(NAME, EMAIL, PASSWORD));
+        // Создание нового пользователя и сохранение accessToken
+        NAME = randomAlphanumeric(4, 8);
+        EMAIL = randomAlphanumeric(6, 10) + "@yandex.ru";
+        PASSWORD = randomAlphanumeric(10, 20);
+        accessToken = UserClient.postCreateNewUser(new User(NAME, EMAIL, PASSWORD));
     }
 
     @Parameterized.Parameters(name = "Результаты проверок браузера: {0}")
