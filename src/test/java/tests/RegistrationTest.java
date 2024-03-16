@@ -26,10 +26,10 @@ public class RegistrationTest {
     private String driverType;
     public static String accessToken;
 
-    String NAME = randomAlphanumeric(4, 8);
-    String EMAIL = randomAlphanumeric(6, 10) + "@yandex.ru";
-    String PASSWORD = randomAlphanumeric(10, 20);
-    String PASSWORD_FAILED = randomAlphanumeric(0, 5);
+    String name = randomAlphanumeric(4, 8);
+    String email = randomAlphanumeric(6, 10) + "@yandex.ru";
+    String password = randomAlphanumeric(10, 20);
+    String passwordFailed = randomAlphanumeric(0, 5);
 
     public RegistrationTest(String driverType) {
         this.driverType = driverType;
@@ -39,8 +39,6 @@ public class RegistrationTest {
     public void startUp() {
         driver = WebDriverUtil.initializeDriver(driverType);
         WebDriverUtil.navigateToUrl(driver, "https://stellarburgers.nomoreparties.site/");
-
-        //accessToken = UserClient.postCreateNewUser(new User(NAME, EMAIL, PASSWORD));
     }
 
     @Parameterized.Parameters(name = "Результаты проверок браузера: {0}")
@@ -61,7 +59,7 @@ public class RegistrationTest {
         loginPage.clickOnRegister();
         RegisterPage registerPage = new RegisterPage(driver);
         registerPage.waitForLoadRegisterPage();
-        registerPage.registration(NAME, EMAIL, PASSWORD);
+        registerPage.registration(name, email, password);
         loginPage.waitForLoadEntrance();
     }
 
@@ -75,7 +73,7 @@ public class RegistrationTest {
         loginPage.clickOnRegister();
         RegisterPage registerPage = new RegisterPage(driver);
         registerPage.waitForLoadRegisterPage();
-        registerPage.registration(NAME, EMAIL, PASSWORD_FAILED);
+        registerPage.registration(name, email, passwordFailed);
         //Проверка появление текста "Некорректный пароль"
         Assert.assertTrue("Текст об ошибке отсутствует", driver.findElement(registerPage.errorPasswordText).isDisplayed());
     }
