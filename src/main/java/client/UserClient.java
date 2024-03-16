@@ -11,23 +11,24 @@ import java.util.Locale;
 public class UserClient {
 
 
-    @Step("Успешное создание уникального пользователя.")
-    public static String postCreateNewUser(User user) {
-        Response response = given()
-                .log().all()
-                .header("Content-type", "application/json")
-                .body(user)
-                .when()
-                .post("/api/auth/register");
+@Step("Успешное создание уникального пользователя.")
+public static String postCreateNewUser(User user) {
+    Response response = given()
+            .log().all()
+            .header("Content-type", "application/json")
+            .body(user)
+            .when()
+            //.post("/api/auth/register");
+            .post("https://stellarburgers.nomoreparties.site/api/auth/register");
 
-        if (response.getStatusCode() == 200) {
-            String accessToken = response.jsonPath().getString("accessToken");
-            return accessToken;
-        } else {
-            System.out.println("Ошибка: Регистрация не удалась");
-            return null;
-        }
+    if (response.getStatusCode() == 200) {
+        String accessToken = response.jsonPath().getString("accessToken");
+        return accessToken;
+    } else {
+        System.out.println("Ошибка: Регистрация не удалась");
+        return null;
     }
+}
 
     @Step("Неуспешный ответ сервера на регистрацию пользователя.")
     public void checkFailedResponseAuthRegister(Response response) {
@@ -37,16 +38,24 @@ public class UserClient {
     }
 
     @Step("Логин под существующим пользователем.")
-    public static Response checkRequestAuthLogin(User user) {
-        return given()
+    public static String checkRequestAuthLogin(User user) {
+        Response response = given()
                 .log()
                 .all()
                 .header("Content-type", "application/json")
                 .body(user)
                 .when()
-                .post("/api/auth/login");
-    }
+                //.post("/api/auth/login");
+                .post("https://stellarburgers.nomoreparties.site/api/auth/login");
 
+        if (response.getStatusCode() == 200) {
+            String accessToken = response.jsonPath().getString("accessToken");
+            return accessToken;
+        } else {
+            System.out.println("Ошибка: Вход не выполнен");
+            return null;
+        }
+    }
 
     @Step("Логин с неверным логином и паролем.")
     public void checkFailedResponseAuthLogin(Response response) {
@@ -95,11 +104,19 @@ public class UserClient {
                 .and().body("message", Matchers.is("You should be authorised"));
     }
 
-    @Step("Удаление пользователя")
-    public static Response deleteUser(String accessToken){
-        return given()
-                .header("Authorization",accessToken)
+    @Step("Удаление пользователя и возврат токена")
+    public static String deleteUser(String accessToken){
+        Response response = given()
+                .header("Authorization", accessToken)
                 .when()
-                .delete("/api/auth/user");
+                .delete("https://stellarburgers.nomoreparties.site/api/auth/user");
+
+        if (response.getStatusCode() == 200) {
+            System.out.println("Пользователь успешно удален");
+            return accessToken;
+        } else {
+            System.out.println("Ошибка при удалении пользователя");
+            return null;
+        }
     }
 }

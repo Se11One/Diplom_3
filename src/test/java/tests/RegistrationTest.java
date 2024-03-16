@@ -24,6 +24,7 @@ public class RegistrationTest {
 
     private WebDriver driver;
     private String driverType;
+    private User user;
     public static String accessToken;
 
     String name = randomAlphanumeric(4, 8);
@@ -53,27 +54,39 @@ public class RegistrationTest {
     @DisplayName("Успешная регистрация.")
     @Description("Проверка успешной регистрации.")
     public void successfulRegistrationTest() {
+        // Создание пользователя через интерфейс
+        user = new User(name, email, password);
+
         MainPage mainPage = new MainPage(driver);
         mainPage.clickOnLoginButton();
         LoginPage loginPage = new LoginPage(driver);
         loginPage.clickOnRegister();
         RegisterPage registerPage = new RegisterPage(driver);
         registerPage.waitForLoadRegisterPage();
-        registerPage.registration(name, email, password);
+        registerPage.registration(user.getName(), user.getEmail(), user.getPassword());
         loginPage.waitForLoadEntrance();
+
+        // Получение и сохранение токена через API метод для авторизации
+        accessToken = UserClient.checkRequestAuthLogin(user);
+
+        // Вывод токена в консоль
+        System.out.println("Access Token: " + accessToken);
     }
 
     @Test
     @DisplayName("Неуспешная регистрация пользователя.")
     @Description("Проверяем неуспешную регистрацию пользователя при вводе пароля меньше 6 символов, и появление сообщения 'Некорректный пароль'.")
     public void failedPasswordRegistrationTest() {
+        // Создание нового пользователя
+        user = new User(name, email, password);
+
         MainPage mainPage = new MainPage(driver);
         mainPage.clickOnLoginButton();
         LoginPage loginPage = new LoginPage(driver);
         loginPage.clickOnRegister();
         RegisterPage registerPage = new RegisterPage(driver);
         registerPage.waitForLoadRegisterPage();
-        registerPage.registration(name, email, passwordFailed);
+        registerPage.registration(user.getName(), user.getEmail(), passwordFailed);
         //Проверка появление текста "Некорректный пароль"
         Assert.assertTrue("Текст об ошибке отсутствует", driver.findElement(registerPage.errorPasswordText).isDisplayed());
     }
@@ -82,11 +95,12 @@ public class RegistrationTest {
     public void tearDown() {
         // Закрытие браузера
         driver.quit();
-    }
 
-    @AfterClass
-    public static void afterClass() {
-        UserClient.deleteUser(accessToken);
+        if (accessToken != null) {
+            UserClient.deleteUser(accessToken);
+        } else {
+            System.out.println("AccessToken is null, cannot delete user.");
+        }
     }
 
 }
